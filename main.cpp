@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     Engine test; 
     teszt = new View2D("First board", 1920, 1080);
     test.start();
-    test.setView(teszt); cout<<"teszt"<<endl;
+    test.setView(teszt); 
     loop(teszt);
     return EXIT_SUCCESS;
 }

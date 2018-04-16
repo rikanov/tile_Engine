@@ -22,7 +22,7 @@
 #include "board.h"
 
 Board::Board()
- :NONE(new Tile)
+ :NONE(new Tile(Ally::NONE,Piece::NONE))
  ,VALHALLA(new Node)
 {
     std::cout<<"board constructor"<<std::endl;
@@ -68,15 +68,14 @@ void Board::init()
     for(int wide = 14; row < 8; ++row, wide -= 2)
     {
         for(int col = 0; col < wide; ++col)
-        {std::cout<<"core "<<col<<' '<<row<<std::endl;
-            Node::connect(board[col][row],board[col+1][row]);std::cout<<"done "<<row<<std::endl;
+        {
+            Node::connect(board[col][row],board[col+1][row]);
             if( row > 4 && col % 2 == 0)
             {
                 Node::connect(board[col][row],board[col+1][row-1]);
             }
         }
     }
-    std::cout<<"number of rows: "<<row<<std::endl;
 }
 
 void Board::setTile(Tile* t, int col, int row)

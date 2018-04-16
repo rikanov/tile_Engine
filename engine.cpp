@@ -63,8 +63,6 @@ void Engine::start()
         setTile(next, 8 + 2 * p.row - p.col, 7 - p.row);
         tiles[index++] = next;
     }
-    std::cout<<"index: "<<index<<std::endl;
-    std::cout<<"============================"<<index<<std::endl;
 }
 
 void Engine::setView(View2D* v)
