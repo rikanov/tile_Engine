@@ -20,23 +20,81 @@
 
 #include "node.h"
 #include "tile.h"
+#include <iostream>
 
-Node::Node()
- :stack_pointer(connections)
- ,end_pointer(connections+5)
+Node::Node(const int& max_size)
+ :connections(new Node* [max_size])
+ ,progress_pointers(nullptr)
+ ,router_pointers(nullptr)
+ ,stack_pointer(connections)
+ ,end_pointer(connections-1)
  ,check_pointer(connections)
+ ,tile(new Tile*)
  ,size(0)
 {
+}
+Node::Node()
+ :Node(5)
+ {    
+ }
+Node::Node(Tile** t)
+ :Node()
+ {
+     tile = t;
+ }
 
+void Node::addRouter(Node *r)
+{
+    if(router_pointers == nullptr)
+    {
+        router_pointers = new Node;
+    }
+    router_pointers->bind(r);
 }
 
 void Node::setTile(Tile* t)
 {
-    tile = t;
+    *tile = t;
     t->setNode(this);
 }
 
 void Node::moveTile(Node* n)
 {
-    n->setTile(tile);
+    n->setTile(*tile);
+}
+
+void Node::purify()
+{
+    for(Node ** n = connections; n != stack_pointer; ++n)
+    {
+        delete (*n);
+    }
+    reset();
+}
+
+void Node::initProgress()
+{
+    progress_pointers = new Node;
+    for(Node ** c = connections; c != stack_pointer; ++c)
+    {
+        Node * n = new Node(tile);
+        progress_pointers->bind(n);
+        (*c)->addRouter(n);
+        for(Node ** ch = connections; ch != stack_pointer; ++ch)
+        {
+            if( c == ch)
+            {
+                continue;
+            }
+            n->bind(*ch);
+        }
+    }
+}
+
+Node::~Node()
+{
+    progress_pointers->purify();
+    delete progress_pointers;
+    delete router_pointers;
+    delete tile;
 }

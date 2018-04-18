@@ -75,6 +75,13 @@ void Board::init()
                 Node::connect(board[col][row],board[col+1][row-1]);
             }
         }
+    }    
+    for(int col = 0; col<15; ++col)
+    {
+        for(int row = 0; row<8; ++row)
+        {
+            board[col][row]->initProgress();
+        }
     }
 }
 

@@ -27,15 +27,24 @@
 class Node: public NodeAuxiliary
 {
     short size;
-    Node * connections[5] = {};
+    
+    mutable 
+    Node ** check_pointer;
+    Node ** connections;
     Node ** stack_pointer;
     Node ** end_pointer;
-    Node ** check_pointer;
-
-    Tile * tile;
+    Tile ** tile;
     
-public:
+    Node * progress_pointers;
+    Node * router_pointers;   
+    
+    void addRouter(Node*);
+
+    public:
     Node();
+    Node(const int& size);
+    Node(Tile**);
+    ~Node();
     void clear()
     {
         stack_pointer = check_pointer = connections;
@@ -45,20 +54,49 @@ public:
     {
         check_pointer = connections;
     }
+    bool empty() const
+    {
+        return connections == stack_pointer;
+    }
     const Node* end() const
     {
         return *end_pointer;
     }
-    Node* next()
+    Node* start() const
     {
-        return check_pointer != stack_pointer ? *(check_pointer++) : *end_pointer;
+        check_pointer = connections;
+        return curr();
+    }
+    Node* curr() const
+    {
+        return (check_pointer != stack_pointer) ? *check_pointer : *end_pointer;
+    }
+    Node* next() const
+    {
+        return (check_pointer != stack_pointer) ? *(++check_pointer) : *end_pointer;
+    }
+    Node* prev() const
+    {
+        return (check_pointer != end_pointer) ? *(--check_pointer) : *end_pointer;
+    }
+    Node* last() const
+    {
+        return *(stack_pointer-1);
     }
     void bind(Node * next)
     {
         *(stack_pointer++) = next;
         ++size;
     }
-    
+    void append(const Node* N)
+    {
+        for(Node* n=N->start(); N->curr() != N->end(); n = N->next())
+        {
+            bind(n);
+        }
+    }
+    void initProgress();
+    void purify(); // might crash the program!
     void setTile(Tile*);
     void moveTile(Node*);
     
