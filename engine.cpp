@@ -43,7 +43,7 @@ const Engine::Position Engine::StartPositions[] =
 
 Engine::Engine()
 :Board()
-,assigned_view2D(nullptr)
+,assigned_view(nullptr)
 {
 
 }
@@ -67,10 +67,21 @@ void Engine::start()
 
 void Engine::setView(View2D* v)
 {
-    assigned_view2D = v;
+    assigned_view = v;
     for(Tile * t: tiles)
     {
         const Node* p = t->getPosition();
-        assigned_view2D->createPieces(t->getAlly(),p->getCol(),p->getRow(),t->getName());
+        assigned_view->createPieces(t->getAlly(),p->getCol(),p->getRow(),t->getName());
     }
 }
+
+void Engine::loop()
+{
+    while(true)
+    {
+        assigned_view->select();
+        assigned_view->moveSelection();
+        assigned_view->selected.clear();
+    };
+}
+

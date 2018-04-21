@@ -26,7 +26,7 @@
 
 class Engine: public Board
 {
-    View2D * assigned_view2D;
+    BoardView * assigned_view;
     struct Position 
     {
         Piece crew;

@@ -14,17 +14,6 @@ void exit()
     SDL_Quit();
 }
 
-void loop(View2D * T)
-{
-    while(true)
-    {
-        T->select();
-        T->moveSelection();
-        T->selected.clear();
-        continue;
-    }
-}
-
 int main(int argc, char *argv[])
 {
     
@@ -33,6 +22,6 @@ int main(int argc, char *argv[])
     teszt = new View2D("First board", 1920, 1080);
     test.start();
     test.setView(teszt); 
-    loop(teszt);
+    test.loop();
     return EXIT_SUCCESS;
 }

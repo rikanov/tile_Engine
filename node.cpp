@@ -34,7 +34,7 @@ Node::Node(const int& max_size)
 {
 }
 Node::Node()
- :Node(5)
+ :Node(3)
  {    
  }
 Node::Node(Tile** t)
