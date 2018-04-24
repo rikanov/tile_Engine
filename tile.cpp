@@ -40,7 +40,6 @@ Tile::Tile()
 Tile::Tile(const Ally& A, const Piece& piece)
  :opponent(A)
  ,piece(piece)
- ,state(State::OFFENSIVE)
 {
     
 }

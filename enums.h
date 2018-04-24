@@ -20,10 +20,12 @@ enum class Piece
     COMMANDER  = AURADIN | HUNTER | TELEPORTER
 };
 
-enum class State
+inline bool archetype(const Piece& p1, const Piece& p2)
 {
-    DEFFENSIVE,
-    OFFENSIVE
-};
-
+    return (static_cast<int>(p1) & static_cast<int>(p2)) != 0;
+}
+inline bool archetype(const Piece& p1, const Piece& p2, const Piece& p3)
+{
+    return (static_cast<int>(p1) & static_cast<int>(p2) & static_cast<int>(p3)) != 0;
+}
 #endif

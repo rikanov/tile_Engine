@@ -29,7 +29,6 @@ class Tile
     static const char* TileNamesToText[];
     Ally opponent;
     Piece piece;
-    State state;
     Node * position;
 public:
     Tile();

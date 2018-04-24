@@ -26,7 +26,16 @@
 
 class Engine: public Board
 {
+    Ally current_turn;
     BoardView * assigned_view;
+    void getStepFromView(Node*) const;
+    bool allowedMove(Node*) const;
+    bool isMarching(const Ally&, Node *) const;
+    bool compareToView() const;
+    void swap()
+    {
+        current_turn = current_turn == Ally::OWN ? Ally::FOE : Ally::OWN;
+    }
     struct Position 
     {
         Piece crew;
@@ -34,12 +43,16 @@ class Engine: public Board
         const int row;
     };
     static const Position StartPositions[];
-    Tile * tiles[32];
+    Node * move;
+    Tile * tiles[32] = {};
     
 public:
-    Engine();
+    Engine(const Ally& A, BoardView* B);
+    ~Engine();
     void start();
-    void setView(View2D * v);
+    void setView(BoardView * v);
+    void doStep(const Node*);
+    void undoStep();
     void loop();
 };
 #endif // ENGINE_H

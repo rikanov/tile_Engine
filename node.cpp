@@ -30,17 +30,24 @@ Node::Node(const int& max_size)
  ,end_pointer(connections-1)
  ,check_pointer(connections)
  ,tile(new Tile*)
- ,size(0)
+ ,current_size(0)
 {
 }
 Node::Node()
  :Node(3)
  {    
  }
-Node::Node(Tile** t)
- :Node()
+Node::Node(Tile** t) 
+ :connections(new Node* [3])
+ ,progress_pointers(nullptr)
+ ,router_pointers(nullptr)
+ ,stack_pointer(connections)
+ ,end_pointer(connections-1)
+ ,check_pointer(connections)
+ ,tile(t)
+ ,current_size(0)
  {
-     tile = t;
+     
  }
 
 void Node::addRouter(Node *r)
@@ -89,6 +96,17 @@ void Node::initProgress()
             n->bind(*ch);
         }
     }
+}
+
+int Node::getDef() const
+{
+    const Ally A = getAlly();
+    int result = archetype(getPiece(),Piece::AURADIN);
+    for(start(); curr() != end(); next())
+    {
+        result += curr()->getDef(A);
+    }
+    return result;
 }
 
 Node::~Node()

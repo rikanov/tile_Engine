@@ -38,15 +38,13 @@ Board::Board()
     }
     init();
     VALHALLA->setTile(NONE);
+    EMPTY = new Node(&NONE);
 }
 
 void Board::init()
 {
     std::cout<<"board init"<<std::endl;
     int row = 0;
-    Node * n1 = new Node;
-    Node * n2 = new Node;
-    Node::connect(n1,n2);
     for(int wide = 8; row < 4; ++row, wide += 2)
     {
         for(int col = 0; col < wide; ++col)
@@ -93,6 +91,7 @@ void Board::setTile(Tile* t, int col, int row)
 Board::~Board()
 {
     delete NONE;
+    delete EMPTY;
     delete VALHALLA;
     for(int col = 0; col<15; ++col)
     {

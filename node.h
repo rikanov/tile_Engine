@@ -26,7 +26,7 @@
 
 class Node: public NodeAuxiliary
 {
-    short size;
+    int current_size;
     
     mutable 
     Node ** check_pointer;
@@ -48,7 +48,7 @@ class Node: public NodeAuxiliary
     void clear()
     {
         stack_pointer = check_pointer = connections;
-        size = 0;
+        current_size = 0;
     }
     void reset()
     {
@@ -67,6 +67,10 @@ class Node: public NodeAuxiliary
         check_pointer = connections;
         return curr();
     }
+    const int& size() const
+    {
+        return current_size;
+    }
     Node* curr() const
     {
         return (check_pointer != stack_pointer) ? *check_pointer : *end_pointer;
@@ -83,10 +87,19 @@ class Node: public NodeAuxiliary
     {
         return *(stack_pointer-1);
     }
+    Node* at(const int& index) const
+    {
+        return *(connections+index);
+    }
     void bind(Node * next)
     {
         *(stack_pointer++) = next;
-        ++size;
+        ++current_size;
+    }
+    Node * back()
+    {
+        check_pointer = stack_pointer - 1;
+        return *check_pointer;
     }
     void append(const Node* N)
     {
@@ -94,6 +107,27 @@ class Node: public NodeAuxiliary
         {
             bind(n);
         }
+    }
+    const Ally& getAlly() const
+    {
+        return (*tile)->getAlly();
+    }
+    const Piece& getPiece() const
+    {
+        return (*tile)->getPiece();
+    }
+    const Piece getPiece(const Ally& A) const
+    {
+        return getAlly() == A ? (*tile)->getPiece() : Piece::NONE;
+    }
+    int getDef() const;
+    int getDef(const Ally& A ) const
+    {
+        return archetype(getPiece(A), Piece::AURADIN);
+    }
+    bool isEmpty() const
+    {
+        return (*tile)->getPiece() == Piece::NONE;
     }
     void initProgress();
     void purify(); // might crash the program!

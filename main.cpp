@@ -18,10 +18,7 @@ int main(int argc, char *argv[])
 {
     
     atexit(exit); 
-    Engine test; 
-    teszt = new View2D("First board", 1920, 1080);
-    test.start();
-    test.setView(teszt); 
+    Engine test(Ally::OWN, new View2D("First board", 1920, 1080));
     test.loop();
     return EXIT_SUCCESS;
 }

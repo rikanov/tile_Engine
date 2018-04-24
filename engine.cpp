@@ -41,11 +41,14 @@ const Engine::Position Engine::StartPositions[] =
     { Piece::COMMANDER   , 5, 1},
 };
 
-Engine::Engine()
+Engine::Engine(const Ally& A, BoardView* B)
 :Board()
+,current_turn(A)
+,move(new Node(6))
 ,assigned_view(nullptr)
 {
-
+    start();
+    setView(B);
 }
 
 void Engine::start()
@@ -65,7 +68,7 @@ void Engine::start()
     }
 }
 
-void Engine::setView(View2D* v)
+void Engine::setView(BoardView* v)
 {
     assigned_view = v;
     for(Tile * t: tiles)
@@ -75,13 +78,113 @@ void Engine::setView(View2D* v)
     }
 }
 
+void Engine::getStepFromView(Node* n) const
+{
+    for(SDL_Point p : assigned_view->selected)
+    {
+        n->bind(board[p.x][p.y]);
+    }
+}
+
+bool Engine::allowedMove(Node* N) const
+{
+    if(N->size() < 2 || N->start()->getAlly() != current_turn || N->last()->getAlly() == current_turn)
+    {
+        return false;
+    }
+    return isMarching(current_turn, N);
+}
+
+bool Engine::isMarching(const Ally& A, Node* N) const
+{
+    bool group = false;
+    Piece line[3] = {};
+    int index = 0;
+    int attack = 0;
+    const int def = N->last()->isEmpty() ? -1 : N->last()->getDef();
+    for(Node* n = N->start(); n != N->last(); n = N->next())
+    {
+        if(n->getAlly() != A)
+        {
+        std::cout<<(A == Ally::OWN ? "OWN" : "FOE")<<' '<<(n->getAlly() == Ally::OWN ? "OWN" : "FOE")<<std::endl;
+            return false;
+        }
+        line[index++] = n->getPiece();
+        attack += archetype(n->getPiece(),Piece::WARRIOR);
+    }
+    switch(N->size())
+    {
+        case 4:
+            group = archetype(line[0],line[1],line[2]);
+            break;
+        case 3:
+            group = archetype(line[0],line[1]);
+            break;
+        case 2:
+            group = true;
+            break;
+        default:
+            return false;
+    }
+    return(group && attack > def);    
+}
+
+void Engine::doStep(const Node* step)
+{
+    move->clear();
+    move->bind(EMPTY);
+    move->append(step);
+    move->bind(VALHALLA);
+    for(Node * n = move->back(); n != EMPTY; n = move->curr())
+    {
+        move->prev()->moveTile(n);
+    }
+    swap();
+}
+
+bool Engine::compareToView() const
+{
+    std::cout<<"Start compare... " <<std::endl;
+    for(int index=0;index<32;++index)
+    {
+        if(tiles[index]->getPosition() == VALHALLA)
+        {
+            continue;
+        }
+        const Node * p = tiles[index]->getPosition();
+        if(index + 1 != assigned_view->getHandle(p->getCol(),p->getRow()))
+        {
+            std::cerr << "mismatch error: " << p->getCol() << ':' << p->getRow() << ' ' << (index+1) << " != " << assigned_view->getHandle(p->getCol(),p->getRow()) << std::endl;
+            return false;
+        }
+    }
+    std::cout<<"compare Ok. " <<std::endl;
+    return true;
+}
+
 void Engine::loop()
 {
+    Node n(4);
     while(true)
     {
         assigned_view->select();
-        assigned_view->moveSelection();
+        n.clear();
+        getStepFromView(&n);
+        if(allowedMove(&n))
+        {
+            doStep(&n);
+            assigned_view->moveSelection();
+            compareToView();
+        }
         assigned_view->selected.clear();
     };
 }
 
+Engine::~Engine()
+{
+    for(Tile * t: tiles)
+    {
+        delete t;
+    }
+    delete assigned_view;
+}
