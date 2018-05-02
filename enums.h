@@ -20,12 +20,32 @@ enum class Piece
     COMMANDER  = AURADIN | HUNTER | TELEPORTER
 };
 
-inline bool archetype(const Piece& p1, const Piece& p2)
+inline bool isMarchingGroup(const Piece& p1, const Piece& p2)
 {
-    return (static_cast<int>(p1) & static_cast<int>(p2)) != 0;
+    return 3 & static_cast<int>(p1) & static_cast<int>(p2);
 }
-inline bool archetype(const Piece& p1, const Piece& p2, const Piece& p3)
+inline bool isMarchingGroup(const Piece& p1, const Piece& p2, const Piece& p3)
 {
-    return (static_cast<int>(p1) & static_cast<int>(p2) & static_cast<int>(p3)) != 0;
+    return 3 & static_cast<int>(p1) & static_cast<int>(p2) & static_cast<int>(p3);
+}
+inline bool isDefender(const Piece& p)
+{
+    return static_cast<int>(p) & 1;
+}
+inline bool isAttacker(const Piece& p)
+{
+    return static_cast<int>(p) & 3;
+}
+inline bool isAuradin(const Piece& p)
+{
+    return static_cast<int>(p) & 1;
+}
+inline bool isHunter(const Piece& p)
+{
+    return static_cast<int>(p) & 2;
+}
+inline bool isTeleporter(const Piece& p)
+{
+    return static_cast<int>(p) & 4;
 }
 #endif

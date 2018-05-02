@@ -44,6 +44,7 @@ const Engine::Position Engine::StartPositions[] =
 Engine::Engine(const Ally& A, BoardView* B)
 :Board()
 ,current_turn(A)
+,available_moves(new Node[2000])
 ,move(new Node(6))
 ,assigned_view(nullptr)
 {
@@ -92,7 +93,7 @@ bool Engine::allowedMove(Node* N) const
     {
         return false;
     }
-    return isMarching(current_turn, N);
+    return true;//isMarching(current_turn, N);
 }
 
 bool Engine::isMarching(const Ally& A, Node* N) const
@@ -110,15 +111,15 @@ bool Engine::isMarching(const Ally& A, Node* N) const
             return false;
         }
         line[index++] = n->getPiece();
-        attack += archetype(n->getPiece(),Piece::WARRIOR);
+        attack += isAttacker(n->getPiece());
     }
     switch(N->size())
     {
         case 4:
-            group = archetype(line[0],line[1],line[2]);
+            group = isMarchingGroup(line[0],line[1],line[2]);
             break;
         case 3:
-            group = archetype(line[0],line[1]);
+            group = isMarchingGroup(line[0],line[1]);
             break;
         case 2:
             group = true;
@@ -167,6 +168,7 @@ void Engine::loop()
     Node n(4);
     while(true)
     {
+        getSteps(current_turn);
         assigned_view->select();
         n.clear();
         getStepFromView(&n);

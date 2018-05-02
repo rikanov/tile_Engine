@@ -77,7 +77,8 @@ class Node: public NodeAuxiliary
     }
     Node* next() const
     {
-        return (check_pointer != stack_pointer) ? *(++check_pointer) : *end_pointer;
+        check_pointer += (check_pointer != stack_pointer);
+        return curr();
     }
     Node* prev() const
     {
@@ -108,6 +109,10 @@ class Node: public NodeAuxiliary
             bind(n);
         }
     }
+    Node * getRouter() const
+    {
+        return router_pointers;
+    }
     const Ally& getAlly() const
     {
         return (*tile)->getAlly();
@@ -123,7 +128,7 @@ class Node: public NodeAuxiliary
     int getDef() const;
     int getDef(const Ally& A ) const
     {
-        return archetype(getPiece(A), Piece::AURADIN);
+        return isDefender(getPiece(A));
     }
     bool isEmpty() const
     {

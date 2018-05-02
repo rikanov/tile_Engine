@@ -100,11 +100,18 @@ void Node::initProgress()
 
 int Node::getDef() const
 {
-    const Ally A = getAlly();
-    int result = archetype(getPiece(),Piece::AURADIN);
-    for(start(); curr() != end(); next())
+    if( (*tile)->getPiece() == Piece::NONE)
     {
-        result += curr()->getDef(A);
+        return -1;
+    }
+    const Ally A = getAlly();
+    int result = isDefender(getPiece());
+    if(result)
+    {
+        for(start(); curr() != end(); next())
+        {
+            result += curr()->getDef(A);
+        }
     }
     return result;
 }

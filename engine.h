@@ -43,14 +43,21 @@ class Engine: public Board
         const int row;
     };
     static const Position StartPositions[];
+    Node * available_moves;
+    Node * next_move;
     Node * move;
     Tile * tiles[32] = {};
+    
+    void teleporting(Node * start);
+    void teleporting(Node * start, Node * teleporter, const int& step);
+    void checkTeleport(Node* n1, Node* n2, const int& step);
     
 public:
     Engine(const Ally& A, BoardView* B);
     ~Engine();
     void start();
     void setView(BoardView * v);
+    void getSteps(const Ally&);
     void doStep(const Node*);
     void undoStep();
     void loop();
