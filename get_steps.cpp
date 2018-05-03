@@ -2,8 +2,7 @@
 
 void Engine::getSteps(const Ally& A)
 {
-    next_move = available_moves;
-    next_move->clear();
+    available_nodes.clear();
     for(int index = A == Ally::OWN ; index < 32; index += 2)
     {
         if(tiles[index]->getPosition() == VALHALLA)
@@ -11,8 +10,8 @@ void Engine::getSteps(const Ally& A)
             continue;
         }
         const Piece P = tiles[index]->getPiece();
-        Node* N = tiles[index]->getPosition();
-        teleporting(N);
+        start_node = tiles[index]->getPosition();
+        teleporting(start_node);
         if(isAttacker(P))
         {
             
@@ -27,35 +26,25 @@ void Engine::getSteps(const Ally& A)
         }
     }
 }
-
-void Engine::teleporting(Node* start)
+void Engine::teleporting(Node* from)
 {
-    Node * S = start->getRouter();
-    for(S->start(); S->curr() != S->end(); S->next())
+    for(from->start(); from->notEnded(); from->next())
     {
-        checkTeleport(start, S->curr(),3);
-    }
-}
-
-void Engine::teleporting(Node* start, Node* teleporter, const int& step)
-{
-    for(teleporter->start(); teleporter->curr() != teleporter->end(); teleporter->next())
-    {
-        checkTeleport(start, teleporter->curr(),step);
-        
-    }
-}
-
-void Engine::checkTeleport(Node* n1, Node* n2, const int& step)
-{
-    if(n2->isEmpty())
-    {
-        next_move->bind(n1);
-        next_move->bind(n2);
-        (++next_move)->clear();
-    }
-    else if(isTeleporter(n2->getPiece(n1->getAlly())) && step > 0)
-    {
-        teleporting(n1,n2, step-1);
+        if(from->curr() == path->last())
+        {
+            continue;
+        }
+        if(from->curr()->getPiece() == Piece::NONE)
+        {
+            available_nodes.bind(start_node);
+            available_nodes.bind(from->curr());
+            available_nodes.push();
+        }
+        else if(isTeleporter(from->curr()->getPiece(current_turn)) && path->size() < 3)
+        {
+            path->bind(from);
+            teleporting(from->curr());
+            path->pop();
+        }
     }
 }

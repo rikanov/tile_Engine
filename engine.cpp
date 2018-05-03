@@ -44,7 +44,7 @@ const Engine::Position Engine::StartPositions[] =
 Engine::Engine(const Ally& A, BoardView* B)
 :Board()
 ,current_turn(A)
-,available_moves(new Node[2000])
+,path(new Node)
 ,move(new Node(6))
 ,assigned_view(nullptr)
 {
@@ -89,11 +89,7 @@ void Engine::getStepFromView(Node* n) const
 
 bool Engine::allowedMove(Node* N) const
 {
-    if(N->size() < 2 || N->start()->getAlly() != current_turn || N->last()->getAlly() == current_turn)
-    {
-        return false;
-    }
-    return true;//isMarching(current_turn, N);
+    return available_nodes.getWrapper()->find(N) != available_nodes.getWrapper()->end();
 }
 
 bool Engine::isMarching(const Ally& A, Node* N) const
@@ -145,7 +141,6 @@ void Engine::doStep(const Node* step)
 
 bool Engine::compareToView() const
 {
-    std::cout<<"Start compare... " <<std::endl;
     for(int index=0;index<32;++index)
     {
         if(tiles[index]->getPosition() == VALHALLA)
@@ -171,12 +166,12 @@ void Engine::loop()
         getSteps(current_turn);
         assigned_view->select();
         n.clear();
-        getStepFromView(&n);
+        getStepFromView(&n); 
         if(allowedMove(&n))
         {
             doStep(&n);
             assigned_view->moveSelection();
-            compareToView();
+            //compareToView();
         }
         assigned_view->selected.clear();
     };
@@ -184,6 +179,7 @@ void Engine::loop()
 
 Engine::~Engine()
 {
+    delete path;
     for(Tile * t: tiles)
     {
         delete t;

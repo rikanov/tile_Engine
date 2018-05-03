@@ -24,12 +24,9 @@
 
 Node::Node(const int& max_size)
  :connections(new Node* [max_size])
- ,progress_pointers(nullptr)
- ,router_pointers(nullptr)
  ,stack_pointer(connections)
  ,end_pointer(connections-1)
  ,check_pointer(connections)
- ,tile(new Tile*)
  ,current_size(0)
 {
 }
@@ -37,70 +34,21 @@ Node::Node()
  :Node(3)
  {    
  }
-Node::Node(Tile** t) 
- :connections(new Node* [3])
- ,progress_pointers(nullptr)
- ,router_pointers(nullptr)
- ,stack_pointer(connections)
- ,end_pointer(connections-1)
- ,check_pointer(connections)
- ,tile(t)
- ,current_size(0)
- {
-     
- }
-
-void Node::addRouter(Node *r)
-{
-    if(router_pointers == nullptr)
-    {
-        router_pointers = new Node;
-    }
-    router_pointers->bind(r);
-}
-
+ 
 void Node::setTile(Tile* t)
 {
-    *tile = t;
+    tile = t;
     t->setNode(this);
 }
 
 void Node::moveTile(Node* n)
 {
-    n->setTile(*tile);
-}
-
-void Node::purify()
-{
-    for(Node ** n = connections; n != stack_pointer; ++n)
-    {
-        delete (*n);
-    }
-    reset();
-}
-
-void Node::initProgress()
-{
-    progress_pointers = new Node;
-    for(Node ** c = connections; c != stack_pointer; ++c)
-    {
-        Node * n = new Node(tile);
-        progress_pointers->bind(n);
-        (*c)->addRouter(n);
-        for(Node ** ch = connections; ch != stack_pointer; ++ch)
-        {
-            if( c == ch)
-            {
-                continue;
-            }
-            n->bind(*ch);
-        }
-    }
+    n->setTile(tile);
 }
 
 int Node::getDef() const
 {
-    if( (*tile)->getPiece() == Piece::NONE)
+    if( tile->getPiece() == Piece::NONE)
     {
         return -1;
     }
@@ -116,10 +64,36 @@ int Node::getDef() const
     return result;
 }
 
+bool Node::operator==(const Node& n) const
+{
+    if(current_size != n.size())
+    {
+        return false;
+    }
+    for(start(),n.start(); notEnded(); next(), n.next())
+    {
+        if(curr() != n.curr())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+Node * Node::find(Node* n) const
+{
+    Node * result;
+    for(result = start(); notEnded(); result = next())
+    {
+        if( *result == *n)
+        {
+            break;
+        }
+    }
+    return result;
+}
+
 Node::~Node()
 {
-    progress_pointers->purify();
-    delete progress_pointers;
-    delete router_pointers;
-    delete tile;
+    
 }

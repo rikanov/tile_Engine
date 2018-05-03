@@ -22,6 +22,7 @@
 #define ENGINE_H
 
 #include "board.h"
+#include "preallocated_nodes.h"
 #include "../View2D/view2d.h"
 
 class Engine: public Board
@@ -43,14 +44,13 @@ class Engine: public Board
         const int row;
     };
     static const Position StartPositions[];
-    Node * available_moves;
-    Node * next_move;
+    PreAllocatedNodes available_nodes;
+    Node * start_node;
+    Node * path;
     Node * move;
     Tile * tiles[32] = {};
-    
-    void teleporting(Node * start);
-    void teleporting(Node * start, Node * teleporter, const int& step);
-    void checkTeleport(Node* n1, Node* n2, const int& step);
+   
+    void teleporting(Node *);
     
 public:
     Engine(const Ally& A, BoardView* B);
@@ -62,4 +62,5 @@ public:
     void undoStep();
     void loop();
 };
+
 #endif // ENGINE_H

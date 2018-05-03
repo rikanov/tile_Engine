@@ -33,22 +33,21 @@ class Node: public NodeAuxiliary
     Node ** connections;
     Node ** stack_pointer;
     Node ** end_pointer;
-    Tile ** tile;
     
-    Node * progress_pointers;
-    Node * router_pointers;   
-    
-    void addRouter(Node*);
-
+    Tile * tile;
+   
     public:
     Node();
     Node(const int& size);
-    Node(Tile**);
     ~Node();
     void clear()
     {
         stack_pointer = check_pointer = connections;
         current_size = 0;
+    }
+    bool notEnded() const
+    {
+        return check_pointer != stack_pointer;
     }
     void reset()
     {
@@ -97,6 +96,14 @@ class Node: public NodeAuxiliary
         *(stack_pointer++) = next;
         ++current_size;
     }
+    void pop()
+    {
+        if(current_size > 0)
+        {
+            --current_size;
+            --stack_pointer;
+        }
+    }
     Node * back()
     {
         check_pointer = stack_pointer - 1;
@@ -109,21 +116,17 @@ class Node: public NodeAuxiliary
             bind(n);
         }
     }
-    Node * getRouter() const
-    {
-        return router_pointers;
-    }
     const Ally& getAlly() const
     {
-        return (*tile)->getAlly();
+        return tile->getAlly();
     }
     const Piece& getPiece() const
     {
-        return (*tile)->getPiece();
+        return tile->getPiece();
     }
     const Piece getPiece(const Ally& A) const
     {
-        return getAlly() == A ? (*tile)->getPiece() : Piece::NONE;
+        return getAlly() == A ? tile->getPiece() : Piece::NONE;
     }
     int getDef() const;
     int getDef(const Ally& A ) const
@@ -132,10 +135,14 @@ class Node: public NodeAuxiliary
     }
     bool isEmpty() const
     {
-        return (*tile)->getPiece() == Piece::NONE;
+        return tile->getPiece() == Piece::NONE;
     }
-    void initProgress();
-    void purify(); // might crash the program!
+    const char * getName() const
+    {
+        return tile->getName();
+    }
+    bool operator == (const Node& n) const;
+    Node * find(Node * n) const;
     void setTile(Tile*);
     void moveTile(Node*);
     
