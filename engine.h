@@ -31,7 +31,7 @@ class Engine: public Board
     BoardView * assigned_view;
     void getStepFromView(Node*) const;
     bool allowedMove(Node*) const;
-    bool isMarching(const Ally&, Node *) const;
+    bool isMarching() const;
     bool compareToView() const;
     void swap()
     {
@@ -50,7 +50,8 @@ class Engine: public Board
     Node * move;
     Tile * tiles[32] = {};
    
-    void teleporting(Node *);
+    void teleportingMoves(Node *);
+    void marchingMoves(Node *);
     
 public:
     Engine(const Ally& A, BoardView* B);

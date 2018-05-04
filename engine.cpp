@@ -92,40 +92,6 @@ bool Engine::allowedMove(Node* N) const
     return available_nodes.getWrapper()->find(N) != available_nodes.getWrapper()->end();
 }
 
-bool Engine::isMarching(const Ally& A, Node* N) const
-{
-    bool group = false;
-    Piece line[3] = {};
-    int index = 0;
-    int attack = 0;
-    const int def = N->last()->isEmpty() ? -1 : N->last()->getDef();
-    for(Node* n = N->start(); n != N->last(); n = N->next())
-    {
-        if(n->getAlly() != A)
-        {
-        std::cout<<(A == Ally::OWN ? "OWN" : "FOE")<<' '<<(n->getAlly() == Ally::OWN ? "OWN" : "FOE")<<std::endl;
-            return false;
-        }
-        line[index++] = n->getPiece();
-        attack += isAttacker(n->getPiece());
-    }
-    switch(N->size())
-    {
-        case 4:
-            group = isMarchingGroup(line[0],line[1],line[2]);
-            break;
-        case 3:
-            group = isMarchingGroup(line[0],line[1]);
-            break;
-        case 2:
-            group = true;
-            break;
-        default:
-            return false;
-    }
-    return(group && attack > def);    
-}
-
 void Engine::doStep(const Node* step)
 {
     move->clear();
