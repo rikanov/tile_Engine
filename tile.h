@@ -50,6 +50,10 @@ public:
     {
         return TileNamesToText[static_cast<int>(piece)];
     }
+    bool empty() const
+    {
+        return opponent == Ally::NONE;
+    }
 };
 
 #endif // TILE_H

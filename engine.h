@@ -50,12 +50,13 @@ class Engine: public Board
     Node * move;
     Node * x_register; // for temporarily operations 
     Node * y_register; // for temporarily operations
+    Node * z_register; // for temporarily operations
     Tile * tiles[32] = {};
    
     void teleportingMoves(Node *);
     void marchingMoves(Node *);
     void rangedAttacks();
-    void getRangedTargets(Node *,Node *, int &);
+    void getRangedTargets(Node *); // collect preys to y_register node
     
 public:
     Engine(const Ally& A, BoardView* B);

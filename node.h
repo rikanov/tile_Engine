@@ -141,10 +141,6 @@ class Node: public NodeAuxiliary
     {
         return isDefender(getPiece(A));
     }
-    bool isEmpty() const
-    {
-        return tile->getPiece() == Piece::NONE;
-    }
     const char * getName() const
     {
         return tile->getName();

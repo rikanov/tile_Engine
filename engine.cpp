@@ -48,6 +48,7 @@ Engine::Engine(const Ally& A, BoardView* B)
 ,move(new Node(6))
 ,x_register(new Node)
 ,y_register(new Node)
+,z_register(new Node)
 ,assigned_view(nullptr)
 {
     start();
@@ -150,6 +151,7 @@ Engine::~Engine()
     delete path;
     delete x_register;
     delete y_register;
+    delete z_register;
     for(Tile * t: tiles)
     {
         delete t;
