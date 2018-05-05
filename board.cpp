@@ -74,6 +74,10 @@ void Board::init()
                 Node::connect(board[col][row],board[col+1][row-1]);
             }
         }
+        if(row > 4)
+        {
+            Node::connect(board[wide][row],board[wide+1][row-1]);
+        }
     } 
 }
 
