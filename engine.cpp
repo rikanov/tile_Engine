@@ -46,6 +46,8 @@ Engine::Engine(const Ally& A, BoardView* B)
 ,current_turn(A)
 ,path(new Node)
 ,move(new Node(6))
+,x_register(new Node)
+,y_register(new Node)
 ,assigned_view(nullptr)
 {
     start();
@@ -146,6 +148,8 @@ void Engine::loop()
 Engine::~Engine()
 {
     delete path;
+    delete x_register;
+    delete y_register;
     for(Tile * t: tiles)
     {
         delete t;
