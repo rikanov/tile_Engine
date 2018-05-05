@@ -40,6 +40,14 @@ class Node: public NodeAuxiliary
     Node();
     Node(const int& size);
     ~Node();
+    void getConnectionsFrom(const Node * from)
+    {
+        check_pointer = from->check_pointer;
+        connections   = from->connections;
+        stack_pointer = from->stack_pointer;
+        end_pointer   = from->end_pointer;
+        current_size  = from->current_size;
+    }
     void clear()
     {
         stack_pointer = check_pointer = connections;
@@ -53,7 +61,7 @@ class Node: public NodeAuxiliary
     {
         check_pointer = connections;
     }
-    bool empty() const
+    bool single() const
     {
         return connections == stack_pointer;
     }
@@ -141,6 +149,10 @@ class Node: public NodeAuxiliary
     {
         return tile->getName();
     }
+    bool empty() const
+    {
+        return tile->empty();
+    }
     bool operator == (const Node& n) const;
     Node * find(Node * n) const;
     void setTile(Tile*);
@@ -150,6 +162,12 @@ class Node: public NodeAuxiliary
     {
         n1->bind(n2);
         n2->bind(n1);
+    }
+    static void swap(Node* n1, Node* n2)
+    {
+        Tile* tmp(n1->tile);
+        n1->setTile(n2->tile);
+        n2->setTile(tmp);
     }
 };
 
