@@ -48,10 +48,14 @@ class Engine: public Board
     Node * start_node;
     Node * path;
     Node * move;
+    Node * x_register; // for temporarily operations 
+    Node * y_register; // for temporarily operations
     Tile * tiles[32] = {};
    
     void teleportingMoves(Node *);
     void marchingMoves(Node *);
+    void rangedAttacks();
+    void getRangedTargets(Node *,Node *, int &);
     
 public:
     Engine(const Ally& A, BoardView* B);
