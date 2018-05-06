@@ -26,8 +26,14 @@
 
 class Node: public NodeAuxiliary
 {
+public:    
+    enum AppendDirection
+    {
+        NORMAL,
+        REVERT
+    };
+protected:
     int current_size;
-    
     mutable 
     Node ** check_pointer;
     Node ** connections;
@@ -112,16 +118,26 @@ class Node: public NodeAuxiliary
             --stack_pointer;
         }
     }
-    Node * back()
+    Node * back() const
     {
         check_pointer = stack_pointer - 1;
         return *check_pointer;
     }
-    void append(const Node* N)
+    void append(const Node* N, const AppendDirection& d = NORMAL)
     {
-        for(Node* n=N->start(); N->curr() != N->end(); n = N->next())
+        if(d == NORMAL)
         {
-            bind(n);
+            for(Node* n=N->start(); N->curr() != N->end(); n = N->next())
+            {
+                bind(n);
+            }
+        }
+        else
+        {
+            for(Node* n=N->back(); N->curr() != N->end(); n = N->prev())
+            {
+                bind(n);
+            }            
         }
     }
     const Ally& getAlly() const
@@ -143,7 +159,7 @@ class Node: public NodeAuxiliary
     }
     const char * getName() const
     {
-        return tile->getName();
+        return tile ? tile->getName() : "not defined";
     }
     bool empty() const
     {

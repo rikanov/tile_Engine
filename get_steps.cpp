@@ -2,7 +2,7 @@
 
 void Engine::getSteps(const Ally& A)
 {
-    available_nodes.clear();
+    available_moves.clear();
     for(int index = A == Ally::OWN ; index < 32; index += 2)
     {
         if(tiles[index]->getPosition() == VALHALLA)
@@ -35,9 +35,9 @@ void Engine::teleportingMoves(Node* from)
         }
         if(from->curr()->getPiece() == Piece::NONE)
         {
-            available_nodes.bind(start_node);
-            available_nodes.bind(from->curr());
-            available_nodes.push();
+            available_moves.bind(start_node);
+            available_moves.bind(from->curr());
+            available_moves.push();
         }
         else if(isTeleporter(from->curr()->getPiece(current_turn)) && path->size() < 3)
         {
@@ -67,8 +67,8 @@ void Engine::marchingMoves(Node* from)
         && (path->size() >2 || from->getAlly() != Ally::NONE) // avoid basic steps redundancy
            )
     {
-        available_nodes.append(path);
-        available_nodes.push();
+        available_moves.append(path);
+        available_moves.push();
     }
     path->pop();
 }
@@ -98,10 +98,10 @@ void Engine::rangedAttacks()
             getRangedTargets(start_node->curr());
             for(y_register->start(); y_register->notEnded(); y_register->next())
             {
-                available_nodes.bind(start_node);
-                available_nodes.bind(start_node->curr());
-                available_nodes.bind(y_register->curr());
-                available_nodes.push();
+                available_moves.bind(start_node);
+                available_moves.bind(start_node->curr());
+                available_moves.bind(y_register->curr());
+                available_moves.push();
             }
             Node::swap(start_node,start_node->curr());
         }
@@ -152,7 +152,6 @@ void Engine::getRangedTargets(Node* from)
                         else
                         {
                             z_register->bind(exp);
-                            std::cout<<"pray "<<ne->getName()<<" - "<<ne->getCol()<<':'<<ne->getRow()<<std::endl;
                         }
                     }
                 }
@@ -164,7 +163,6 @@ void Engine::getRangedTargets(Node* from)
             else
             {
                 z_register->bind(ne);
-                std::cout<<"pray "<<ne->getName()<<" - "<<ne->getCol()<<':'<<ne->getRow()<<std::endl;
             }
         }
         for(z_register->start(); z_register->notEnded(); z_register->next())

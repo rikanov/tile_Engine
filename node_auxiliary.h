@@ -8,6 +8,9 @@ protected:
     bool initialized = false;
     
 public:
+    
+    int value = 0;
+    
     NodeAuxiliary(){}
     void setPosition(const int& c, const int& r)
     {

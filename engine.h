@@ -30,6 +30,7 @@ class Engine: public Board
     Ally current_turn;
     BoardView * assigned_view;
     void getStepFromView(Node*) const;
+    void setViewFromStep(Node*) const;
     bool allowedMove(Node*) const;
     bool isMarching() const;
     bool compareToView() const;
@@ -44,7 +45,10 @@ class Engine: public Board
         const int row;
     };
     static const Position StartPositions[];
-    PreAllocatedNodes available_nodes;
+    
+    PreAllocatedNodes step_history;
+    PreAllocatedNodes available_moves;
+    
     Node * start_node;
     Node * path;
     Node * move;
@@ -64,7 +68,7 @@ public:
     void start();
     void setView(BoardView * v);
     void getSteps(const Ally&);
-    void doStep(const Node*);
+    void doStep(Node* step);
     void undoStep();
     void loop();
 };

@@ -27,6 +27,7 @@ Node::Node(const int& max_size)
  ,stack_pointer(connections)
  ,end_pointer(connections-1)
  ,check_pointer(connections)
+ ,tile(nullptr)
  ,current_size(0)
 {
 }

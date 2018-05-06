@@ -58,6 +58,7 @@ Engine::Engine(const Ally& A, BoardView* B)
 void Engine::start()
 {
     int index = 0;
+    available_moves.init(NONE);
     for(Position p : StartPositions)
     {
         // set enemies first 
@@ -90,21 +91,50 @@ void Engine::getStepFromView(Node* n) const
     }
 }
 
-bool Engine::allowedMove(Node* N) const
+void Engine::setViewFromStep(Node* n) const
 {
-    return available_nodes.getWrapper()->find(N) != available_nodes.getWrapper()->end();
+    assigned_view->selected.clear();
+    for(n->start(); n->notEnded(); n->next())
+    {
+        SDL_Point next;
+        next.x = n->curr()->getCol();
+        next.y = n->curr()->getRow();
+        assigned_view->selected.push_back(next);
+    }
+    assigned_view->moveSelection(n->value);
 }
 
-void Engine::doStep(const Node* step)
+bool Engine::allowedMove(Node* N) const
+{
+    return available_moves.getWrapper()->find(N) != available_moves.getWrapper()->end();
+}
+
+void Engine::doStep(Node* step)
 {
     move->clear();
-    move->bind(EMPTY);
+    move->bind(step);
     move->append(step);
-    move->bind(VALHALLA);
-    for(Node * n = move->back(); n != EMPTY; n = move->curr())
+    move->bind(step_history.curr());
+    step_history.append(step,Node::REVERT);
+    step_history.push();
+    for(Node * n = move->back(); n != step; n = move->curr())
     {
         move->prev()->moveTile(n);
     }
+    swap(); 
+}
+
+void Engine::undoStep()
+{
+    Node* step = step_history.last();
+    move->clear();
+    move->bind(step);
+    move->append(step);
+    for(Node * n = move->back(); n != step; n = move->curr())
+    {
+        move->prev()->moveTile(n);
+    }
+    step_history.pop();
     swap();
 }
 
@@ -130,16 +160,23 @@ bool Engine::compareToView() const
 void Engine::loop()
 {
     Node n(4);
+    n.setTile(NONE);
     while(true)
     {
+        n.clear();
         getSteps(current_turn);
         assigned_view->select();
-        n.clear();
+        if(assigned_view->undo_request && step_history)
+        { 
+            setViewFromStep(step_history.last());
+            undoStep();
+            continue;
+        } 
         getStepFromView(&n); 
         if(allowedMove(&n))
         {
+            step_history.value(assigned_view->moveSelection());
             doStep(&n);
-            assigned_view->moveSelection();
             //compareToView();
         }
         assigned_view->selected.clear();
@@ -148,10 +185,12 @@ void Engine::loop()
 
 Engine::~Engine()
 {
-    delete path;
-    delete x_register;
-    delete y_register;
-    delete z_register;
+    std::cout << "Stop engine... " << std::endl;
+    delete path;       std::cout << "Path deleted... " << std::endl;
+    delete x_register; std::cout << "x_register deleted... " << std::endl;
+    delete y_register; std::cout << "y_register deleted... " << std::endl;
+    delete z_register; std::cout << "z_register deleted... " << std::endl;
+    //*/
     for(Tile * t: tiles)
     {
         delete t;

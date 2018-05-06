@@ -19,6 +19,10 @@ public:
     {
         delete wrapper;
     }
+    operator bool() const
+    {
+        return !(wrapper->single());
+    }
     void clear()
     {
         wrapper->clear();
@@ -30,16 +34,39 @@ public:
         wrapper->bind(next_step++);
         next_step->clear();
     }
+    void pop()
+    {
+        wrapper->pop();
+    }
     void bind(Node * n)
     {
         next_step->bind(n);
     }
-    void append(Node * n)
+    void append(Node * n, const Node::AppendDirection& d = Node::NORMAL)
     {
-        next_step->append(n);
+        next_step->append(n,d);
+    }
+    Node* curr() const
+    {
+        return next_step;
+    }
+    Node* last() const
+    {
+        return wrapper->last();
+    }
+    void value(const int& v)
+    {
+        next_step->value = v;
     }
     Node * getWrapper() const
     {
         return wrapper;
+    }
+    void init(Tile* t)
+    {
+        for(Node n : stored_data)
+        {
+            n.setTile(t);
+        }
     }
 };
