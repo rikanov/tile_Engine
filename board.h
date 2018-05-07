@@ -28,8 +28,6 @@ class Board
 {
 protected:
     Tile * NONE;
-    Node * VALHALLA;
-    Node * EMPTY;
     Node * board[15][8];
 public:
     Board();

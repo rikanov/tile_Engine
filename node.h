@@ -40,12 +40,15 @@ protected:
     Node ** stack_pointer;
     Node ** end_pointer;
     
+    Node * teleports;
+    
     Tile * tile;
    
     public:
     Node();
     Node(const int& size);
     ~Node();
+    void initTeleports();
     void getConnectionsFrom(const Node * from)
     {
         check_pointer = from->check_pointer;
@@ -165,11 +168,18 @@ protected:
     {
         return tile->empty();
     }
-    bool operator == (const Node& n) const;
-    Node * find(Node * n) const;
+    Node* getTeleports() const
+    {
+        return teleports;
+    }
+    Tile* getTile() const
+    {
+        return tile;
+    }
     void setTile(Tile*);
     void moveTile(Node*);
-    
+    bool operator == (const Node& n) const;
+    Node * find(Node * n) const;
     static void connect(Node* n1, Node* n2)
     {
         n1->bind(n2);

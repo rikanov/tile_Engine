@@ -57,6 +57,7 @@ class Engine: public Board
     Node * z_register; // for temporarily operations
     Tile * tiles[32] = {};
    
+    void teleporterMoves();
     void teleportingMoves(Node *);
     void marchingMoves(Node *);
     void rangedAttacks();

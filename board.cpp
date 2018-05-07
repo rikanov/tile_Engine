@@ -23,8 +23,6 @@
 
 Board::Board()
  :NONE(new Tile(Ally::NONE,Piece::NONE))
- ,VALHALLA(new Node)
- ,EMPTY(new Node)
 {
     std::cout<<"board constructor"<<std::endl;
     for(int col = 0; col<15; ++col)
@@ -38,8 +36,6 @@ Board::Board()
         }
     }
     init();
-    VALHALLA->setTile(NONE);
-    EMPTY->setTile(NONE);
 }
 
 void Board::init()
@@ -79,6 +75,13 @@ void Board::init()
             Node::connect(board[wide][row],board[wide+1][row-1]);
         }
     } 
+    for(int col=0; col<15; ++col)
+    {
+        for(int row=0; row<8; ++row)
+        {
+            board[col][row]->initTeleports();
+        }
+    }
 }
 
 void Board::setTile(Tile* t, int col, int row)
@@ -89,8 +92,6 @@ void Board::setTile(Tile* t, int col, int row)
 Board::~Board()
 {
     delete NONE;
-    delete EMPTY;
-    delete VALHALLA;
     for(int col = 0; col<15; ++col)
     {
         for(int row = 0; row<7; ++row)

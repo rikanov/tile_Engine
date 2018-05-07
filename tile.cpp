@@ -34,12 +34,14 @@ const char* Tile::TileNamesToText[] =
 };
 
 Tile::Tile()
+ :is_active(true)
 {
 
 }
 Tile::Tile(const Ally& A, const Piece& piece)
  :opponent(A)
  ,piece(piece)
+ ,is_active(true)
 {
     
 }

@@ -5,26 +5,41 @@ void Engine::getSteps(const Ally& A)
     available_moves.clear();
     for(int index = A == Ally::OWN ; index < 32; index += 2)
     {
-        if(tiles[index]->getPosition() == VALHALLA)
+        if(tiles[index]->isActive() )
         {
-            continue;
-        }
-        const Piece P = tiles[index]->getPiece();
-        start_node = tiles[index]->getPosition();
-        teleportingMoves(start_node);
-        if(isAttacker(P))
-        {
-            marchingMoves(start_node);
-        } // no else
-        if(isHunter(P))
-        {
-            rangedAttacks();            
-        } // no else here
-        if(isTeleporter(P))
-        {
+            const Piece P = tiles[index]->getPiece();
+            start_node = tiles[index]->getPosition();
+            teleportingMoves(start_node);
+            if(isAttacker(P))
+            {
+                marchingMoves(start_node);
+            } // no else
+            if(isHunter(P))
+            {
+                rangedAttacks();            
+            } // no else here
+            if(isTeleporter(P))
+            {
+                teleporterMoves();
+            }
         }
     }
 }
+
+void Engine::teleporterMoves()
+{
+    Node * t = start_node->getTeleports();
+    for(Node * n = t->start(); t->notEnded(); n = t->next())
+    {
+        if(n->empty())
+        {
+            available_moves.bind(start_node);
+            available_moves.bind(n);
+            available_moves.push();
+        }
+    }
+}
+
 void Engine::teleportingMoves(Node* from)
 {
     for(from->start(); from->notEnded(); from->next())

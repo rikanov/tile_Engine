@@ -30,6 +30,7 @@ class Tile
     Ally opponent;
     Piece piece;
     Node * position;
+    bool is_active;
 public:
     Tile();
     Tile(const Ally& A, const Piece& piece);
@@ -53,6 +54,18 @@ public:
     bool empty() const
     {
         return opponent == Ally::NONE;
+    }
+    bool isActive() const
+    {
+        return is_active;
+    }
+    void activate()
+    {
+        is_active = true;
+    }
+    void deactivate()
+    {
+        is_active = false;
     }
 };
 

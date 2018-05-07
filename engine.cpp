@@ -115,18 +115,20 @@ void Engine::doStep(Node* step)
     move->bind(step);
     move->append(step);
     move->bind(step_history.curr());
-    step_history.append(step,Node::REVERT);
-    step_history.push();
     for(Node * n = move->back(); n != step; n = move->curr())
     {
         move->prev()->moveTile(n);
     }
+    step_history.curr()->getTile()->deactivate();
+    step_history.append(step,Node::REVERT);
+    step_history.push();
     swap(); 
 }
 
 void Engine::undoStep()
 {
     Node* step = step_history.last();
+    step->getTile()->activate();
     move->clear();
     move->bind(step);
     move->append(step);
@@ -142,7 +144,7 @@ bool Engine::compareToView() const
 {
     for(int index=0;index<32;++index)
     {
-        if(tiles[index]->getPosition() == VALHALLA)
+        if(tiles[index]->isActive() == false)
         {
             continue;
         }
@@ -166,6 +168,10 @@ void Engine::loop()
         n.clear();
         getSteps(current_turn);
         assigned_view->select();
+        if(assigned_view->exit_request)
+        {
+            break;
+        }
         if(assigned_view->undo_request && step_history)
         { 
             setViewFromStep(step_history.last());

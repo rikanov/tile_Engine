@@ -27,6 +27,7 @@ Node::Node(const int& max_size)
  ,stack_pointer(connections)
  ,end_pointer(connections-1)
  ,check_pointer(connections)
+ ,teleports(nullptr)
  ,tile(nullptr)
  ,current_size(0)
 {
@@ -36,6 +37,21 @@ Node::Node()
  {    
  }
  
+void Node::initTeleports()
+{
+    teleports = new Node(6);
+    for(start(); notEnded(); next())
+    {
+        for(Node * n = curr()->start(); curr()->notEnded(); n = curr()->next())
+        {
+            if(n != this)
+            {
+                teleports->bind(n);
+            }
+        }
+    }
+}
+
 void Node::setTile(Tile* t)
 {
     tile = t;
