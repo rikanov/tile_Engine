@@ -23,17 +23,14 @@
 #include <iostream>
 
 Node::Node(const int& max_size)
- :connections(new Node* [max_size])
- ,stack_pointer(connections)
- ,end_pointer(connections-1)
- ,check_pointer(connections)
+ :inner_store(new Node* [max_size+1])
  ,teleports(nullptr)
  ,tile(nullptr)
- ,current_size(0)
 {
+     reinit();
 }
 Node::Node()
- :Node(3)
+ :Node(4)
  {    
  }
  
@@ -112,5 +109,7 @@ Node * Node::find(Node* n) const
 
 Node::~Node()
 {
-    
+    check_pointer = stack_pointer = connections = end_pointer = nullptr;
+    delete[] inner_store;
+    delete teleports;
 }

@@ -8,7 +8,6 @@ Engine * test = nullptr;
 
 void exit()
 {
-    delete test;
     cout << "Engine: Finishing SDL..." << endl;
     std::cout << "IMG Quit... " << std::endl;
     IMG_Quit();
@@ -16,6 +15,8 @@ void exit()
     std::cout << "SDL Quit... " << std::endl;
     SDL_Quit();
     std::cout << "Done. " << std::endl;
+    delete test;
+    std::cout<<"Finish program..."<<std::endl;
 }
 
 int main(int argc, char *argv[])

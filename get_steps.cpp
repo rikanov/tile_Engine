@@ -180,6 +180,7 @@ void Engine::getRangedTargets(Node* from)
                 z_register->bind(ne);
             }
         }
+        x_register->reinit();
         for(z_register->start(); z_register->notEnded(); z_register->next())
         {
             if(z_register->curr()->getDef() < ranged_synergy)

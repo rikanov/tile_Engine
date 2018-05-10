@@ -39,6 +39,7 @@ protected:
     Node ** connections;
     Node ** stack_pointer;
     Node ** end_pointer;
+    Node ** inner_store;
     
     Node * teleports;
     
@@ -56,6 +57,12 @@ protected:
         stack_pointer = from->stack_pointer;
         end_pointer   = from->end_pointer;
         current_size  = from->current_size;
+    }
+    void reinit()
+    {
+        current_size = 0;
+        end_pointer = inner_store;
+        check_pointer = stack_pointer = connections = end_pointer +1;
     }
     void clear()
     {

@@ -5,12 +5,13 @@ static const int STEPS_NUMBER_UPPER_LIMIT = 320;
 
 class PreAllocatedNodes
 {
-    Node stored_data[STEPS_NUMBER_UPPER_LIMIT];
+    Node * stored_data;
     Node * wrapper;
     Node * next_step;
 public:
     PreAllocatedNodes()
      :wrapper(new Node(STEPS_NUMBER_UPPER_LIMIT))
+     ,stored_data(new Node[STEPS_NUMBER_UPPER_LIMIT])
      , next_step(&stored_data[0]) 
     {
         next_step->clear();
@@ -18,6 +19,7 @@ public:
     ~PreAllocatedNodes()
     {
         delete wrapper;
+        delete[] stored_data;
     }
     operator bool() const
     {
@@ -64,9 +66,9 @@ public:
     }
     void init(Tile* t)
     {
-        for(Node n : stored_data)
+        for(wrapper->start();wrapper->notEnded();wrapper->next())
         {
-            n.setTile(t);
+            wrapper->curr()->setTile(t);
         }
     }
 };

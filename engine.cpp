@@ -193,13 +193,17 @@ Engine::~Engine()
 {
     std::cout << "Stop engine... " << std::endl;
     delete path;       std::cout << "Path deleted... " << std::endl;
+    delete move;       std::cout << "Move deleted... " << std::endl;
     delete x_register; std::cout << "x_register deleted... " << std::endl;
     delete y_register; std::cout << "y_register deleted... " << std::endl;
     delete z_register; std::cout << "z_register deleted... " << std::endl;
-    //*/
+    
+    std::cout<<"Delete tiles ... "<<std::endl;
     for(Tile * t: tiles)
     {
         delete t;
     }
+    std::cout<<"Done. "<<std::endl;
     delete assigned_view;
+    std::cout <<"Engine has been ended."<<std::endl;
 }

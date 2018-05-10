@@ -94,9 +94,10 @@ Board::~Board()
     delete NONE;
     for(int col = 0; col<15; ++col)
     {
-        for(int row = 0; row<7; ++row)
+        for(int row = 0; row<8; ++row)
         {
             delete board[col][row];
+            board[col][row] = nullptr;
         }
     }
 }
