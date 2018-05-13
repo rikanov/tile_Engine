@@ -21,6 +21,19 @@
 #include "tile.h"
 #include "node.h"
 
+double Tile::value_norm = 0.0;
+const double Tile::StandardValues[] =
+{
+    0.0,    // some kind of error
+    1.0,    // auradin
+    1.0,    // hunter
+    2.5,    // warrior
+    1.0,    // teleporter
+    2.2,    // guardian
+    2.3,    // assassin
+    3.5     // commander
+};
+
 const char* Tile::TileNamesToText[] = 
 {
     "none",    // some kind of error
@@ -36,16 +49,28 @@ const char* Tile::TileNamesToText[] =
 Tile::Tile()
  :is_active(true)
 {
-
+    
 }
 Tile::Tile(const Ally& A, const Piece& piece)
  :opponent(A)
  ,piece(piece)
  ,is_active(true)
 {
-    
+    if(value_norm==0.0)
+    {
+        for(double d : StandardValues)
+        {
+            value_norm += d;
+        }
+    }
+    value = StandardValues[static_cast<int>(piece)] / value_norm;
 }
 void Tile::setNode(Node* n)
 {
     position = n;
+}
+
+double Tile::getValue() const
+{
+    return value * position->value;
 }

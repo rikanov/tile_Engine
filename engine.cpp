@@ -21,6 +21,8 @@
 #include <iostream>
 #include "engine.h"
 
+const int Engine::DEPTH_BOUNDARY = 20;
+
 const Engine::Position Engine::StartPositions[] =
 {
     { Piece::HUNTER      , 1, 0},
@@ -50,30 +52,34 @@ Engine::Engine(const Ally& A, BoardView* B)
 ,y_register(new Node)
 ,z_register(new Node)
 ,assigned_view(nullptr)
+,available_steps(new PreAllocatedNodes[DEPTH_BOUNDARY])
 {
     start();
-    setView(B);
+    setUI(B);
 }
 
 void Engine::start()
 {
-    int index = 0;
-    available_moves.init(NONE);
+    int index = 0, member = 0;
+    for(int i=0; i<DEPTH_BOUNDARY; ++i)
+    {
+        available_steps[i].init(NONE);
+    }
     for(Position p : StartPositions)
     {
         // set enemies first 
         Tile * next = new Tile(Ally::FOE,p.crew);
         setTile(next,p.col, p.row);
-        tiles[index++] = next;
+        tiles[index++] = crew[0][member] = next;
         
         // set own army on the opposite side of board
         next = new Tile(Ally::OWN, p.crew);
         setTile(next, 8 + 2 * p.row - p.col, 7 - p.row);
-        tiles[index++] = next;
+        tiles[index++] = crew[1][member++] = next;
     }
 }
 
-void Engine::setView(BoardView* v)
+void Engine::setUI(BoardView* v)
 {
     assigned_view = v;
     for(Tile * t: tiles)
@@ -106,11 +112,12 @@ void Engine::setViewFromStep(Node* n) const
 
 bool Engine::allowedMove(Node* N) const
 {
-    return available_moves.getWrapper()->find(N) != available_moves.getWrapper()->end();
+    return available_steps[current_search_level].getWrapper()->find(N) != available_steps[current_search_level].getWrapper()->end();
 }
 
 void Engine::doStep(Node* step)
 {
+   // makeView(step);
     move->clear();
     move->bind(step);
     move->append(step);
@@ -189,9 +196,42 @@ void Engine::loop()
     };
 }
 
+double Engine::evaluate() const
+{
+    double result[] = {0.0,0.0};
+    for(int ally = 0; ally<2; ++ally)
+    for(int index = 0; index<16; ++index)
+    {
+        Tile * next = crew[ally][index];
+        if(next->isActive())
+        {
+            result[ally] += next->getValue();
+        }
+    }
+    return current_turn == Ally::OWN ? result[1] / result[0] : result[0] / result[1];
+}
+
+void Engine::makeView(Node* step)
+{
+    const int inc = step->start()->value+1;
+    for(; step->notEnded(); step->next())
+    {
+        step->curr()->makeView(inc);
+    }
+}
+
+void Engine::closeView(Node* step, const int& level)
+{
+    for(step->start(); step->notEnded(); step->next())
+    {
+        step->curr()->closeView(level);
+    }
+}
+
 Engine::~Engine()
 {
     std::cout << "Stop engine... " << std::endl;
+    delete[] available_steps;
     delete path;       std::cout << "Path deleted... " << std::endl;
     delete move;       std::cout << "Move deleted... " << std::endl;
     delete x_register; std::cout << "x_register deleted... " << std::endl;

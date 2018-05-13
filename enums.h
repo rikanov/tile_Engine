@@ -8,6 +8,11 @@ enum class Ally
     OWN
 };
 
+inline int ally_index(const Ally& A)
+{
+    return A == Ally::OWN;
+}
+
 enum class Piece
 {
     NONE = 0,

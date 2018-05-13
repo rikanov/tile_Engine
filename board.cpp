@@ -21,6 +21,8 @@
 #include<iostream>
 #include "board.h"
 
+static const double COST_DISTANCE = 0.05;
+
 Board::Board()
  :NONE(new Tile(Ally::NONE,Piece::NONE))
 {
@@ -42,6 +44,7 @@ void Board::init()
 {
     std::cout<<"board init"<<std::endl;
     int row = 0;
+    // make connections between the nodes
     for(int wide = 8; row < 4; ++row, wide += 2)
     {
         for(int col = 0; col < wide; ++col)
@@ -75,11 +78,34 @@ void Board::init()
             Node::connect(board[wide][row],board[wide+1][row-1]);
         }
     } 
+    // store 2-steps distant nodes 
     for(int col=0; col<15; ++col)
     {
         for(int row=0; row<8; ++row)
         {
             board[col][row]->initTeleports();
+            board[col][row]->initEnvironment();
+        }
+    }
+    // distance from the centre
+    Node BFS(96);
+    for(int col=6;col<9;++col)
+    {
+        for(int row=3;row<5;++row)
+        {
+            board[col][row]->ai_score=1.0;
+            BFS.bind(board[col][row]);
+        }
+    }
+    for(Node * n = BFS.start(); BFS.notEnded(); n = BFS.next())
+    {
+        for(Node * ne = n->start(); n->notEnded(); ne = n->next())
+        {
+            if(ne->ai_score == 0.0)
+            {
+                ne->ai_score = n->ai_score - COST_DISTANCE;
+                BFS.bind(ne);
+            }
         }
     }
 }

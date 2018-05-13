@@ -42,6 +42,7 @@ protected:
     Node ** inner_store;
     
     Node * teleports;
+    Node * environment;
     
     Tile * tile;
    
@@ -50,9 +51,10 @@ protected:
     Node(const int& size);
     ~Node();
     void initTeleports();
+    void initEnvironment();
     void getConnectionsFrom(const Node * from)
     {
-        check_pointer = from->check_pointer;
+        check_pointer = from->connections;
         connections   = from->connections;
         stack_pointer = from->stack_pointer;
         end_pointer   = from->end_pointer;
@@ -120,6 +122,7 @@ protected:
         *(stack_pointer++) = next;
         ++current_size;
     }
+    bool imbue(Node * next);
     void pop()
     {
         if(current_size > 0)
@@ -133,23 +136,7 @@ protected:
         check_pointer = stack_pointer - 1;
         return *check_pointer;
     }
-    void append(const Node* N, const AppendDirection& d = NORMAL)
-    {
-        if(d == NORMAL)
-        {
-            for(Node* n=N->start(); N->curr() != N->end(); n = N->next())
-            {
-                bind(n);
-            }
-        }
-        else
-        {
-            for(Node* n=N->back(); N->curr() != N->end(); n = N->prev())
-            {
-                bind(n);
-            }            
-        }
-    }
+    void append(const Node* N, const AppendDirection& d = NORMAL);
     const Ally& getAlly() const
     {
         return tile->getAlly();
@@ -192,6 +179,8 @@ protected:
         n1->bind(n2);
         n2->bind(n1);
     }
+    void makeView(const int& inc);
+    void closeView(const int& inc);
     static void swap(Node* n1, Node* n2)
     {
         Tile* tmp(n1->tile);

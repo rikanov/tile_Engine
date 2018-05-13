@@ -2,13 +2,15 @@
 
 void Engine::getSteps(const Ally& A)
 {
-    available_moves.clear();
-    for(int index = A == Ally::OWN ; index < 32; index += 2)
+    available_steps[current_search_level].clear();
+    const int ally = A == Ally::OWN; 
+    for(int index = 0; index < 16; ++index)
     {
-        if(tiles[index]->isActive() )
+        const Tile * next = crew[ally][index];
+        if(next->isActive() )
         {
-            const Piece P = tiles[index]->getPiece();
-            start_node = tiles[index]->getPosition();
+            const Piece P = next->getPiece();
+            start_node = next->getPosition();
             teleportingMoves(start_node);
             if(isAttacker(P))
             {
@@ -17,7 +19,7 @@ void Engine::getSteps(const Ally& A)
             if(isHunter(P))
             {
                 rangedAttacks();            
-            } // no else here
+            } // no else
             if(isTeleporter(P))
             {
                 teleporterMoves();
@@ -33,9 +35,9 @@ void Engine::teleporterMoves()
     {
         if(n->empty())
         {
-            available_moves.bind(start_node);
-            available_moves.bind(n);
-            available_moves.push();
+            available_steps[current_search_level].bind(start_node);
+            available_steps[current_search_level].bind(n);
+            available_steps[current_search_level].push();
         }
     }
 }
@@ -50,9 +52,9 @@ void Engine::teleportingMoves(Node* from)
         }
         if(from->curr()->getPiece() == Piece::NONE)
         {
-            available_moves.bind(start_node);
-            available_moves.bind(from->curr());
-            available_moves.push();
+            available_steps[current_search_level].bind(start_node);
+            available_steps[current_search_level].bind(from->curr());
+            available_steps[current_search_level].push();
         }
         else if(isTeleporter(from->curr()->getPiece(current_turn)) && path->size() < 3)
         {
@@ -82,8 +84,8 @@ void Engine::marchingMoves(Node* from)
         && (path->size() >2 || from->getAlly() != Ally::NONE) // avoid basic steps redundancy
            )
     {
-        available_moves.append(path);
-        available_moves.push();
+        available_steps[current_search_level].append(path);
+        available_steps[current_search_level].push();
     }
     path->pop();
 }
@@ -113,10 +115,10 @@ void Engine::rangedAttacks()
             getRangedTargets(start_node->curr());
             for(y_register->start(); y_register->notEnded(); y_register->next())
             {
-                available_moves.bind(start_node);
-                available_moves.bind(start_node->curr());
-                available_moves.bind(y_register->curr());
-                available_moves.push();
+                available_steps[current_search_level].bind(start_node);
+                available_steps[current_search_level].bind(start_node->curr());
+                available_steps[current_search_level].bind(y_register->curr());
+                available_steps[current_search_level].push();
             }
             Node::swap(start_node,start_node->curr());
         }

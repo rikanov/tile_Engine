@@ -27,7 +27,10 @@
 
 class Engine: public Board
 {
+    static const int DEPTH_BOUNDARY;
     Ally current_turn;
+    int searching_depth =0;
+    
     BoardView * assigned_view;
     void getStepFromView(Node*) const;
     void setViewFromStep(Node*) const;
@@ -47,31 +50,46 @@ class Engine: public Board
     static const Position StartPositions[];
     
     PreAllocatedNodes step_history;
-    PreAllocatedNodes available_moves;
-    
+    PreAllocatedNodes * available_steps;
+    int current_search_level = 0;
+    // Nodes for temporary data
     Node * start_node;
     Node * path;
     Node * move;
-    Node * x_register; // for temporarily operations 
-    Node * y_register; // for temporarily operations
-    Node * z_register; // for temporarily operations
-    Tile * tiles[32] = {};
+    Node * x_register; // for temporary operations 
+    Node * y_register; // for temporary operations
+    Node * z_register; // for temporary operations
+    //-------------------------
+    
+    Tile * tiles[32] = {};    // indexed by UI piece-handlers
+    Tile * crew[2][16] = {};
    
     void teleporterMoves();
     void teleportingMoves(Node *);
     void marchingMoves(Node *);
     void rangedAttacks();
     void getRangedTargets(Node *); // collect preys to y_register node
+   
+    void getSteps(const Ally&);
+    void doStep(Node* step);
+    void undoStep();
+    bool stepInView(Node*) const;
+    
+    void makeView(Node*);    
+    void closeView(Node*, const int&);
+    
+    double evaluate() const;
+    
+    void setUI(BoardView * v);
+    void start();
     
 public:
     Engine(const Ally& A, BoardView* B);
     ~Engine();
-    void start();
-    void setView(BoardView * v);
-    void getSteps(const Ally&);
-    void doStep(Node* step);
-    void undoStep();
     void loop();
+    
+private:
+
 };
 
 #endif // ENGINE_H

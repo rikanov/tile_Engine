@@ -26,12 +26,18 @@
 class Node;
 class Tile
 {
+    static double value_norm;
+    static const double StandardValues[];
     static const char* TileNamesToText[];
+    
     Ally opponent;
     Piece piece;
     Node * position;
     bool is_active;
+    double value;
+
 public:
+
     Tile();
     Tile(const Ally& A, const Piece& piece);
     void setNode(Node *);
@@ -51,6 +57,7 @@ public:
     {
         return TileNamesToText[static_cast<int>(piece)];
     }
+    double getValue() const;
     bool empty() const
     {
         return opponent == Ally::NONE;

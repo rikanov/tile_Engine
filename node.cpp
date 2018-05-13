@@ -25,6 +25,7 @@
 Node::Node(const int& max_size)
  :inner_store(new Node* [max_size+1])
  ,teleports(nullptr)
+ ,environment(nullptr)
  ,tile(nullptr)
 {
      reinit();
@@ -46,6 +47,31 @@ void Node::initTeleports()
                 teleports->bind(n);
             }
         }
+    }
+}
+
+void Node::initEnvironment()
+{
+    environment = new Node(20);
+    environment->bind(this);
+    value = 0;
+    for(Node * next = environment->start(); environment->notEnded(); next = environment->next())
+    {
+        if(next->value == 3)
+        {
+            continue;
+        }
+        for(next->start(); next->notEnded(); next->next())
+        {
+            if(environment->imbue(next->curr()))
+            {
+                next->curr()->value = next->value +1;
+            }
+        }
+    }
+    for(environment->start(); environment->notEnded(); environment->next())
+    {
+        environment->curr()->value = 0;
     }
 }
 
@@ -107,9 +133,63 @@ Node * Node::find(Node* n) const
     return result;
 }
 
+bool Node::imbue(Node* next)
+{
+    for(Node ** n = connections; n != stack_pointer; ++n)
+    {
+        if(*n == next)
+        {
+            return false;
+        }
+    }
+    bind(next);
+    return true;
+}
+
+void Node::append(const Node* N, const Node::AppendDirection& d)
+{
+    if(d == NORMAL)
+    {
+        for(Node* n=N->start(); N->curr() != N->end(); n = N->next())
+        {
+            bind(n);
+        }
+    }
+    else
+    {
+        for(Node* n=N->back(); N->curr() != N->end(); n = N->prev())
+        {
+            bind(n);
+        }            
+    }
+}
+ 
+void Node::makeView(const int& inc)
+{
+    for(environment->start(); environment->notEnded(); environment->next())
+    {
+        if(environment->curr()->getSearchLevel() != inc)
+        {
+            environment->curr()->setSearchLevel(inc);
+        }
+    }
+}
+
+void Node::closeView(const int& inc)
+{
+    for(environment->start(); environment->notEnded(); environment->next())
+    {
+        if(environment->curr()->getSearchLevel() == inc)
+        {
+            environment->curr()->backSearchLevel();
+        }
+    }
+}
+
 Node::~Node()
 {
     check_pointer = stack_pointer = connections = end_pointer = nullptr;
     delete[] inner_store;
     delete teleports;
+    delete environment;
 }
